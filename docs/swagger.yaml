@@ -1,0 +1,69 @@
+basePath: /api
+definitions:
+  main.ErrorResponse:
+    properties:
+      error:
+        example: Failed to fetch stories
+        type: string
+    type: object
+  main.Story:
+    properties:
+      comments_url:
+        example: https://news.ycombinator.com/item?id=123456
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 123456
+        type: integer
+      points:
+        example: 100
+        type: integer
+      submitted_by:
+        example: johndoe
+        type: string
+      title:
+        example: 'Show HN: My Cool Project'
+        type: string
+      type:
+        description: '"top", "show", "ask"'
+        example: show
+        type: string
+      url:
+        example: https://github.com/cool/project
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A simple API that mirrors Hacker News content
+  title: Hackers API
+  version: "1.0"
+paths:
+  /stories/{type}:
+    get:
+      consumes:
+      - application/json
+      description: Get stories from Hacker News based on type
+      parameters:
+      - description: Story type (top/show/ask)
+        in: path
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Story'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get stories
+      tags:
+      - stories
+swagger: "2.0"

@@ -8,19 +8,34 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/cloudbees-days/hackers-api/docs" // Import generated Swagger docs
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title           Hackers API
+// @version         1.0
+// @description     A simple API that mirrors Hacker News content
+// @host            localhost:8080
+// @BasePath        /api
+
+// ErrorResponse represents an error response
+type ErrorResponse struct {
+	Error string `json:"error" example:"Failed to fetch stories"`
+}
 
 // Story represents a Hacker News story item
 type Story struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	URL         string    `json:"url"`
-	Points      int       `json:"points"`
-	SubmittedBy string    `json:"submitted_by"`
+	ID          int       `json:"id" example:"123456"`
+	Title       string    `json:"title" example:"Show HN: My Cool Project"`
+	URL         string    `json:"url" example:"https://github.com/cool/project"`
+	Points      int       `json:"points" example:"100"`
+	SubmittedBy string    `json:"submitted_by" example:"johndoe"`
 	CreatedAt   time.Time `json:"created_at"`
-	CommentsURL string    `json:"comments_url"`
-	Type        string    `json:"type"` // "top", "show", "ask"
+	CommentsURL string    `json:"comments_url" example:"https://news.ycombinator.com/item?id=123456"`
+	Type        string    `json:"type" example:"show"` // "top", "show", "ask"
 }
 
 // HNItem represents the raw Hacker News API response
@@ -158,6 +173,15 @@ func fetchItem(id int) (*HNItem, error) {
 	return &item, nil
 }
 
+// @Summary     Get stories
+// @Description Get stories from Hacker News based on type
+// @Tags        stories
+// @Accept      json
+// @Produce     json
+// @Param       type path string false "Story type (top/show/ask)"
+// @Success     200 {array} Story
+// @Failure     500 {object} ErrorResponse
+// @Router      /stories/{type} [get]
 func getStories(c *gin.Context) {
 	storyType := c.Param("type")
 	if storyType == "" {
@@ -166,7 +190,7 @@ func getStories(c *gin.Context) {
 
 	stories, err := fetchStories(storyType)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -196,6 +220,9 @@ func main() {
 		api.GET("/stories", getStories)       // Default to top stories
 		api.GET("/stories/:type", getStories) // Get stories by type (top/show/ask)
 	}
+
+	// Swagger documentation endpoint
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run(":8080")
 }

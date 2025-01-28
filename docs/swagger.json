@@ -1,0 +1,101 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A simple API that mirrors Hacker News content",
+        "title": "Hackers API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/stories/{type}": {
+            "get": {
+                "description": "Get stories from Hacker News based on type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stories"
+                ],
+                "summary": "Get stories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Story type (top/show/ask)",
+                        "name": "type",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/main.Story"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Failed to fetch stories"
+                }
+            }
+        },
+        "main.Story": {
+            "type": "object",
+            "properties": {
+                "comments_url": {
+                    "type": "string",
+                    "example": "https://news.ycombinator.com/item?id=123456"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 123456
+                },
+                "points": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "submitted_by": {
+                    "type": "string",
+                    "example": "johndoe"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Show HN: My Cool Project"
+                },
+                "type": {
+                    "description": "\"top\", \"show\", \"ask\"",
+                    "type": "string",
+                    "example": "show"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "https://github.com/cool/project"
+                }
+            }
+        }
+    }
+}
