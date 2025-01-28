@@ -10,6 +10,7 @@ A Go-based REST API that mirrors Hacker News content, providing endpoints for to
 - 🔄 CORS enabled for frontend integration
 - 🐳 Docker support
 - 📱 Endpoints for different story types (top/show/ask)
+- 🧪 Comprehensive test suite
 
 ## Prerequisites
 
@@ -99,18 +100,41 @@ The API implements an in-memory cache with the following characteristics:
 ```
 .
 ├── main.go           # Main application file
+├── main_test.go      # Test file
 ├── Dockerfile        # Docker configuration
 ├── go.mod           # Go module file
 ├── go.sum           # Go module checksum
 └── docs/            # Generated Swagger documentation
 ```
 
+### Testing
+
+The project includes comprehensive tests covering:
+- API endpoints functionality
+- Caching mechanism
+- Error handling
+- CORS headers
+
+To run the tests:
+
+```bash
+# Run all tests
+go test -v ./...
+
+# Run tests with coverage
+go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+# View coverage in browser
+go tool cover -html=coverage.txt
+```
+
 ### Adding New Features
 
 1. Update the code in `main.go`
 2. Regenerate Swagger docs: `swag init`
-3. Test your changes
-4. Build and run
+3. Add tests for new functionality
+4. Run tests to ensure everything passes
+5. Build and run
 
 ## Contributing
 
@@ -124,4 +148,4 @@ The API implements an in-memory cache with the following characteristics:
 
 - [Hacker News API](https://github.com/HackerNews/API)
 - [Gin Web Framework](https://github.com/gin-gonic/gin)
-- [Swagger/Swag](https://github.com/swaggo/swag) 
+- [Swagger/Swag](https://github.com/swaggo/swag)
