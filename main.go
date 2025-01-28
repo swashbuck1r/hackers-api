@@ -35,6 +35,7 @@ type Story struct {
 	SubmittedBy string    `json:"submitted_by" example:"johndoe"`
 	CreatedAt   time.Time `json:"created_at"`
 	CommentsURL string    `json:"comments_url" example:"https://news.ycombinator.com/item?id=123456"`
+	Comments    int       `json:"comments" example:"42"`
 	Type        string    `json:"type" example:"show"` // "top", "show", "ask"
 }
 
@@ -148,6 +149,7 @@ func fetchStories(storyType string) ([]Story, error) {
 			SubmittedBy: item.By,
 			CreatedAt:   time.Unix(item.Time, 0),
 			CommentsURL: fmt.Sprintf("https://news.ycombinator.com/item?id=%d", item.ID),
+			Comments:    item.Descendants,
 			Type:        storyType,
 		}
 		stories = append(stories, story)

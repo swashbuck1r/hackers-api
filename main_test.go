@@ -61,6 +61,7 @@ func TestGetStoriesEndpoint(t *testing.T) {
 					assert.NotEmpty(t, story.SubmittedBy, "Story submitter should not be empty")
 					assert.NotZero(t, story.CreatedAt, "Story creation time should not be zero")
 					assert.Contains(t, story.CommentsURL, "news.ycombinator.com/item", "Comments URL should be a valid HN URL")
+					assert.GreaterOrEqual(t, story.Comments, 0, "Comments count should be non-negative")
 				}
 			},
 		},

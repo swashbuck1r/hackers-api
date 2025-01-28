@@ -82,6 +82,7 @@ http://localhost:8080/swagger/index.html
   "submitted_by": "johndoe",
   "created_at": "2024-01-28T12:00:00Z",
   "comments_url": "https://news.ycombinator.com/item?id=123456",
+  "comments": 42,
   "type": "show"
 }
 ```
