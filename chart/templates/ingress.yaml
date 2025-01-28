@@ -5,9 +5,9 @@ metadata:
   labels:
     app: hackers-api
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - {{ .Values.hostname }}
