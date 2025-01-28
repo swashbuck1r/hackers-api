@@ -1,0 +1,16 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your application is now being deployed...
+
+Application Details:
+  Host: {{ .Values.hostname }}
+  Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+The API will be available at:
+  https://{{ .Values.hostname }}/api/stories
+
+You can access the Swagger documentation at:
+  https://{{ .Values.hostname }}/swagger/index.html
+
+To test the API, try:
+  curl -X GET "https://{{ .Values.hostname }}/api/stories" 

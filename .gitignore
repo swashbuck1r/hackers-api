@@ -5,6 +5,7 @@
 *.so
 *.dylib
 hackers-api
+!hackers-api/
 
 # Test binary, built with `go test -c`
 *.test
