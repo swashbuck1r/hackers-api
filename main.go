@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/cloudbees-days/hackers-api/docs" // Import generated Swagger docs
+	_ "github.com/cloudbees-days/hackers-api/docs"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
