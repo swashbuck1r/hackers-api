@@ -16,7 +16,7 @@ jobs:
       - name: Run unit tests
         id: RunUnitTest
         kind: test
-        uses: docker://golang:1.24
+        uses: docker://golang:1.23
         run: |
           go test -coverprofile=coverage.out -v ./...
           go build
