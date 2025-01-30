@@ -18,6 +18,8 @@ jobs:
         kind: test
         uses: docker://golang:1.23
         run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+          swag init
           go test -coverprofile=coverage.out -v ./...
           go build
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
