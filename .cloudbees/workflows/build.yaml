@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - "**"
-
+  workflow_dispatch:
 jobs:
   test:
     outputs:
@@ -23,11 +23,6 @@ jobs:
           go test -coverprofile=coverage.out -v ./...
           go build
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
-      # - name: Publish test results
-      #   uses: cloudbees-io/publish-test-results@v1
-      #   with:
-      #     test-type: JUnit
-      #     folder-name: ${{ cloudbees.workspace }}/junit.xml
       - name: Publish evidence
         uses: cloudbees-io/publish-evidence-item@v1
         with:
@@ -69,11 +64,9 @@ jobs:
         with:
           content: |-
             ## Built and pushed image to docker hub
-            
+
             [Docker Hub](https://hub.docker.com/repository/docker/${{ secrets.dockerhub_user }}/hackers-api/tags)
-            
+
             Deployed hackers-api:${{ cloudbees.scm.sha }}
           format: MARKDOWN
     needs: test
-
- 
