@@ -1,0 +1,39 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: deploy
+on:
+  workflow_dispatch:
+env:
+  NAMESPACE: microhacker
+  APP_NAME: microhacker-api
+jobs:
+  deploy:
+    environment: micro-hacker
+    steps:
+      - name: Checkout
+        uses: cloudbees-io/checkout@v1
+      - uses: cashokannamalai/kubeconfig@v1
+        name: Set kubeconfig
+        with:
+          secname: ${{ secrets.kubeconfig }}
+      - id: install-chart
+        name: Install helm chart
+        uses: cloudbees-io/helm-install@v1
+        with:
+          chart-location: ${{ cloudbees.workspace }}/chart
+          release-name: ${{ env.APP_NAME }}
+          namespace: ${{ env.NAMESPACE }}
+          values: |
+            image:
+              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              tag: ${{ cloudbees.scm.sha }}
+            hostname: microhacker-api.preview.cb-demos.io
+      - name: Publish evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+        with:
+          content: |-
+            ## Deployed environment
+            [Dev frontend](https://microhacker-api.preview.cb-demos.io/)
+
+            Running hackers-api:${{ cloudbees.scm.sha }}
+          format: MARKDOWN
