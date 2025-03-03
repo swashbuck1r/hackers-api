@@ -26,7 +26,7 @@ jobs:
           values: |
             image:
               repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
-              tag: ${{ cloudbees.scm.sha }}
+              tag: latest
             hostname: microhacker-api.preview.cb-demos.io
       - name: Publish evidence
         uses: cloudbees-io/publish-evidence-item@v1
