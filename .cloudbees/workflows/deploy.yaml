@@ -3,21 +3,22 @@ kind: workflow
 name: deploy
 on:
   workflow_dispatch:
-    artifactName:
-      type: string
-      required: true
-    artifactVersion:
-      type: string
-      required: true
-    environment:
-      type: string
-      required: true
-    url:
-      type: string
-      required: false
-    digest:
-      type: string
-      required: false
+    inputs:
+      artifactName:
+        type: string
+        required: true
+      artifactVersion:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      url:
+        type: string
+        required: false
+      digest:
+        type: string
+        required: false
 env:
   NAMESPACE: microhacker
   APP_NAME: microhacker-api
