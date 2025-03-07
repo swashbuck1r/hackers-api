@@ -47,9 +47,9 @@ jobs:
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v1
         with:
-          name: ${{ env.APP_NAME }}
+          name: ${{ secrets.DOCKERHUB_USER }}/hackers-api
           version: latest
-          url: "docker.io/${{ secrets.DOCKERHUB_USER }}/hackers-api"
+          url: "${{ secrets.DOCKERHUB_USER }}/hackers-api:latest"
           target-environment: micro-hacker
       - name: Publish evidence
         uses: cloudbees-io/publish-evidence-item@v1
