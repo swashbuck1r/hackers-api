@@ -10,8 +10,8 @@ jobs:
   verify:
     if: ${{ cloudbees.scm.branch != 'main' }}
     env:
-        MIN_COVERAGE: "65"
-        COVER: "coverage.out"
+      COVER: "coverage.out"
+      MIN_COVERAGE: "65"
     outputs:
       CODE_COVERAGE: ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
     steps:
@@ -40,10 +40,10 @@ jobs:
 
           echo "__________________ OUTPUTS __________________"
           echo "NOTICE: test.log (go test), $COVER (gocov), test.xml (JUnit) are available in the workspace."
-      
+
       - name: Coverage check
         uses: docker://golang:1.23
-        
+
         run: |
           echo "__________________ COVERAGE CHECK __________________"
           coverage=$(go tool cover -func=$COVER | grep -E '^total:' | awk '{print $3}')
@@ -58,7 +58,7 @@ jobs:
               echo "Coverage is less than $MIN_COVERAGE%."
               exit 1
           fi
-      
+
       - name: Run build
         kind: build
         uses: docker://golang:1.23
@@ -73,7 +73,7 @@ jobs:
         with:
           folder-name: ${{ cloudbees.workspace }}/test.xml
           test-type: go
-        
+
       - name: Publish evidence
         uses: cloudbees-io/publish-evidence-item@v1
         with:
@@ -81,4 +81,3 @@ jobs:
             ## Test code coverage
             ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
           format: MARKDOWN
-  
