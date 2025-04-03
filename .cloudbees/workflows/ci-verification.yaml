@@ -151,3 +151,11 @@ jobs:
         with:
           image-location: ${{ secrets.DOCKERHUB_USER }}/hackers-api
           image-tag: ${{ cloudbees.scm.sha }}
+
+  trufflehog-test:
+    steps:
+      - name: Run TruffleHog container scan (published)
+        uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
+        with:
+          image-location: swashbuck1r/hackers-api
+          image-tag: 864e4fd444dcb2fdf3c1947dd505dfee62784451
