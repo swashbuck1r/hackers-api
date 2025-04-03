@@ -23,7 +23,6 @@ jobs:
         kind: test
         uses: docker://golang:1.23
         run: |
-          # set -o pipefail
           go install github.com/jstemmer/go-junit-report@latest
           go install github.com/swaggo/swag/cmd/swag@latest
           swag init

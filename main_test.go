@@ -80,7 +80,7 @@ func TestGetStoriesEndpoint(t *testing.T) {
 		{
 			name:           "Get Ask HN Stories",
 			endpoint:       "/api/stories/ask",
-			expectedStatus: http.StatusCreated,
+			expectedStatus: http.StatusOK,
 			validateResponse: func(t *testing.T, stories []Story) {
 				assert.NotEmpty(t, stories, "Stories should not be empty")
 				for _, story := range stories {
