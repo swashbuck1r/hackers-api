@@ -51,7 +51,7 @@ jobs:
           destination: ${{ secrets.DOCKERHUB_USER }}/hackers-api:${{ cloudbees.scm.sha }},${{ secrets.DOCKERHUB_USER }}/hackers-api:latest
           tar-path: container-image.tar
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
-      - uses: calculi-corp/assets-plugin-chain-utils/upload-binary@v1
+      - uses: cloudbees-io/asset-chain-utils/upload-binary@v1
         name: Upload binary from container build
         continue-on-error: true
         id: upload-binary
