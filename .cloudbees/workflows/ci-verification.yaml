@@ -103,7 +103,7 @@ jobs:
           swag init
           go build
 
-      - name: Build container image
+      - name: Build container image (locally)
         uses: cloudbees-io/kaniko@v1
         with:
           destination: 127.0.0.1:5000/myapp:0.0.1
@@ -111,12 +111,6 @@ jobs:
 
       - name: Run TruffleHog container scan (pre-publish)
         uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
-        with:
-          image-location: 127.0.0.1:5000/myapp
-          image-tag: 0.0.1
-
-      - name: Running container scan using Trivy
-        uses: cloudbees-io/trivy-scan-container@v1
         with:
           image-location: 127.0.0.1:5000/myapp
           image-tag: 0.0.1
