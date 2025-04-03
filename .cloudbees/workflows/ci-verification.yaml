@@ -81,3 +81,14 @@ jobs:
             ## Test code coverage
             ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
           format: MARKDOWN
+
+      - name: Build container image
+        uses: cloudbees-io/kaniko@v1
+        with:
+          tar-path: container-image.tar
+          build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
+      
+      - name: Debug files
+        uses: docker://golang:1.23
+        run: |
+          find .
