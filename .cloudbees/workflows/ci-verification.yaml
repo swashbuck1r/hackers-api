@@ -14,16 +14,29 @@ jobs:
     steps:
       - uses: cloudbees-io/checkout@v1
         name: Get source code
-      - name: Run unit tests
+      - name: runs test
         id: RunUnitTest
         kind: test
         uses: docker://golang:1.23
         run: |
+          go install github.com/jstemmer/go-junit-report@latest
           go install github.com/swaggo/swag/cmd/swag@latest
           swag init
-          go test -coverprofile=coverage.out -v ./...
-          go build
+          go test -v -timeout 15m -coverprofile=coverage.out ./... | tee ./test.log
+          go-junit-report < ./test.log > ./junit.xml
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
+          go build
+
+      # - name: Run unit tests
+      #   id: RunUnitTest
+      #   kind: test
+      #   uses: docker://golang:1.23
+      #   run: |
+      #     go install github.com/swaggo/swag/cmd/swag@latest
+      #     swag init
+      #     go test -coverprofile=coverage.out -v ./...
+      #     go build
+      #     cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
       - name: Print test results
         uses: docker://golang:1.20.3-alpine3.17
         run: |
