@@ -119,11 +119,11 @@ jobs:
       #     file-type: BINARY_CONTAINER
       #     debug: "true"
 
-      - name: Run TruffleHog container scan
-        uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
-        with:
-          image-location: 127.0.0.1:5000/myapp
-          image-tag: 0.0.1
+      # - name: Run TruffleHog container scan
+      #   uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
+      #   with:
+      #     image-location: 127.0.0.1:5000/myapp
+      #     image-tag: 0.0.1
 
       - name: Running container scan using Trivy
         uses: cloudbees-io/trivy-scan-container@v1
