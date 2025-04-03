@@ -1,0 +1,34 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: CI verification workflow
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+jobs:
+  verify:
+    if: ${{ cloudbees.scm.branch != 'main' }}
+    outputs:
+      CODE_COVERAGE: ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
+    steps:
+      - uses: cloudbees-io/checkout@v1
+        name: Get source code
+      - name: Run unit tests
+        id: RunUnitTest
+        kind: test
+        uses: docker://golang:1.23
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+          swag init
+          go test -coverprofile=coverage.out -v ./...
+          go build
+          cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
+      - name: Publish evidence
+        uses: cloudbees-io/publish-evidence-item@v1
+        with:
+          content: |-
+            ## Test code coverage
+            ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
+          format: MARKDOWN
+  
