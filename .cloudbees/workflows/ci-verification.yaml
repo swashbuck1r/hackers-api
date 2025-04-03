@@ -28,7 +28,7 @@ jobs:
           go build
 
       - name: Publish test results
-        if: ${{ !cancelled() }}
+        if: ${{ always() }}
         uses: cloudbees-io/publish-test-results@v1
         with:
           folder-name: ${{ cloudbees.workspace }}/test.xml
