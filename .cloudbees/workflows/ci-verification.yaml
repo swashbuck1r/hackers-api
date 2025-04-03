@@ -117,7 +117,6 @@ jobs:
 
       - uses: cloudbees-io/configure-oci-credentials@v1
         name: Configure container registry credentials
-        continue-on-error: true
         id: dockerconfig
         with:
           registry: https://index.docker.io/v1/
@@ -140,7 +139,6 @@ jobs:
 
       - uses: cloudbees-io/asset-chain-utils/upload-binary@v1
         name: Upload binary from container build
-        continue-on-error: true
         id: upload-binary
         with:
           file-path: container-image.tar
