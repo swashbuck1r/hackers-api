@@ -108,28 +108,18 @@ jobs:
         with:
           destination: 127.0.0.1:5000/myapp:0.0.1
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
-          tar-path: container-image.tar
 
-      - name: Run TruffleHog container scan
+      - name: Run TruffleHog container scan (pre-publish)
         uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
         with:
           image-location: 127.0.0.1:5000/myapp
           image-tag: 0.0.1
 
-      - uses: cloudbees-io/asset-chain-utils/upload-binary@v1
-        name: Upload binary from container build
-        continue-on-error: true
-        id: upload-binary
+      - name: Running container scan using Trivy
+        uses: cloudbees-io/trivy-scan-container@v1
         with:
-          file-path: container-image.tar
-          file-type: BINARY_CONTAINER
-          debug: "true"
-
-      # - name: Running container scan using Trivy
-      #   uses: cloudbees-io/trivy-scan-container@v1
-      #   with:
-      #     image-location: 127.0.0.1:5000/myapp
-      #     image-tag: 0.0.1
+          image-location: 127.0.0.1:5000/myapp
+          image-tag: 0.0.1
 
       - uses: cloudbees-io/configure-oci-credentials@v1
         name: Configure container registry credentials
@@ -139,23 +129,26 @@ jobs:
           registry: https://index.docker.io/v1/
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - uses: cloudbees-io/kaniko@v1
         name: Build container image
         kind: build
         with:
           destination: ${{ secrets.DOCKERHUB_USER }}/hackers-api:${{ cloudbees.scm.sha }},${{ secrets.DOCKERHUB_USER }}/hackers-api:latest
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
+          tar-path: container-image.tar
 
-      - name: Run TruffleHog container scan (published)
+      - name: Run TruffleHog container scan (post-publish)
         uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
         with:
           image-location: ${{ secrets.DOCKERHUB_USER }}/hackers-api
           image-tag: ${{ cloudbees.scm.sha }}
 
-  trufflehog-test:
-    steps:
-      - name: Run TruffleHog container scan (published)
-        uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
+      - uses: cloudbees-io/asset-chain-utils/upload-binary@v1
+        name: Upload binary from container build
+        continue-on-error: true
+        id: upload-binary
         with:
-          image-location: swashbuck1r/hackers-api
-          image-tag: 864e4fd444dcb2fdf3c1947dd505dfee62784451
+          file-path: container-image.tar
+          file-type: BINARY_CONTAINER
+          debug: "true"
