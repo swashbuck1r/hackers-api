@@ -36,7 +36,7 @@ jobs:
         if: ${{ always() }}
         uses: cloudbees-io/publish-test-results@v1
         with:
-          folder-name: ${{ cloudbees.workspace }}/test.log
+          folder-name: ${{ cloudbees.workspace }}/test.xml
           test-type: go
         
       - name: Publish evidence
