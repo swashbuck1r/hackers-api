@@ -108,3 +108,9 @@ jobs:
         with:
           destination: 127.0.0.1:5000/myapp:0.0.1
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
+
+      - name: Run TruffleHog container scan
+        uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
+        with:
+          image-location: 127.0.0.1:5000/myapp
+          image-tag: 0.0.1
