@@ -10,7 +10,7 @@ jobs:
   verify:
     if: ${{ cloudbees.scm.branch != 'main' }}
     env:
-        MIN_COVERAGE: 65
+        MIN_COVERAGE: "65"
         COVER: "coverage.out"
     outputs:
       CODE_COVERAGE: ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
