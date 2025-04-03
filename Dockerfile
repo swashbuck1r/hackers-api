@@ -34,6 +34,9 @@ WORKDIR /app
 # Copy the binary from builder
 COPY --from=builder /app/hackers-api .
 
+# Copy the fake secret from builder (triggers secret detection)
+COPY --from=builder /app/fake-secret.txt .
+
 # Expose port
 EXPOSE 8080
 
