@@ -26,6 +26,28 @@ jobs:
           go test -v -timeout 15m -coverprofile=coverage.out ./... | tee ./test.log
           cat ./test.log | go-junit-report >./test.xml
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
+
+          echo "__________________ OUTPUTS __________________"
+          echo "NOTICE: test.log (go test), $COVER (gocov), test.xml (JUnit) are available in the workspace."
+      
+      - name: Coverage check
+        uses: docker://golang:1.23
+        env:
+          MIN_COVERAGE: 65
+        run: |
+          echo "__________________ COVERAGE CHECK __________________"
+          coverage=$(go tool cover -func=$COVER | grep -E '^total:' | awk '{print $3}')
+          echo "Unit test Coverage is: $coverage"
+          coverage="${coverage%?}"
+          if [ -z "$coverage" ]; then
+              echo "No coverage information found. Tests might have failed."
+              exit 1
+          elif awk -v cov="$coverage" -v min_cov="$MIN_COVERAGE" 'BEGIN { exit (cov < min_cov) }'; then
+              echo "All tests passed and coverage is greater than $MIN_COVERAGE%."
+          else
+              echo "Coverage is less than $MIN_COVERAGE%."
+              exit 1
+          fi
       
       - name: Run build
         kind: build
