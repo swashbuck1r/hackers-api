@@ -23,11 +23,12 @@ jobs:
         kind: test
         uses: docker://golang:1.23
         run: |
+          set -o pipefail
           go install github.com/jstemmer/go-junit-report@latest
           go install github.com/swaggo/swag/cmd/swag@latest
           swag init
           go test -v -timeout 15m -coverprofile=$COVER ./... | tee ./test.log
-          test_status_code=$?
+          test_status_code=${PIPESTATUS[0]}
           cat ./test.log | go-junit-report >./test.xml
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
 
