@@ -85,6 +85,7 @@ jobs:
       - name: Build container image
         uses: cloudbees-io/kaniko@v1
         with:
+          destination: myapp:0.0.1
           tar-path: container-image.tar
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
       
