@@ -27,8 +27,16 @@ jobs:
           go install github.com/swaggo/swag/cmd/swag@latest
           swag init
           go test -v -timeout 15m -coverprofile=$COVER ./... | tee ./test.log
+          test_status_code=$?
           cat ./test.log | go-junit-report >./test.xml
           cat coverage.out >> $CLOUDBEES_OUTPUTS/CODE_COVERAGE
+
+          if [ $test_status_code -eq 0 ]; then
+            echo "Go Test Passed"
+          else
+            echo "Go Test Failed exit code $test_status_code"
+            exit 1
+          fi
 
           echo "__________________ OUTPUTS __________________"
           echo "NOTICE: test.log (go test), $COVER (gocov), test.xml (JUnit) are available in the workspace."
