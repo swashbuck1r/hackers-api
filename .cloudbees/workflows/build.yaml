@@ -7,6 +7,31 @@ on:
       - "**"
   workflow_dispatch:
 jobs:
+  dump-context:
+    steps:
+      - uses: docker://golang:1.20.3-alpine3.17
+        name: Dump workflow context
+        env:
+          CLOUDBEES_CONTEXT: ${{ toJSON(cloudbees) }}
+          VARS_CONTEXT: ${{ toJSON(vars) }}
+          SECRETS_CONTEXT: ${{ toJSON(secrets) }}
+          JOB_CONTEXT: ${{ toJSON(job) }}
+          STEP_CONTEXT: ${{ toJSON(step) }}
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+        run: |
+          echo "----- VARS -----"
+          echo "$VARS_CONTEXT"
+          echo "----- SECRETS -----"
+          echo "$SECRETS_CONTEXT"
+          echo "----- CLOUDBEES -----"
+          echo "cloudbees.scm.sha: ${{ cloudbees.scm.sha }}"
+          echo "$CLOUDBEES_CONTEXT"
+          echo "----- JOB -----"
+          echo "$JOB_CONTEXT"
+          echo "----- STEP -----"
+          echo "$STEP_CONTEXT"
+          echo "----- STEPS -----"
+          echo "$STEPS_CONTEXT"
   test:
     if: ${{ cloudbees.scm.branch == 'main' }}
     env:
