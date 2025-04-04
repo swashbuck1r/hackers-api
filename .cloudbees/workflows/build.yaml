@@ -246,6 +246,6 @@ jobs:
           namespace: ${{ env.APP_NAME }}
           values: |
             image:
-              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              repository: oci://docker.io/${{ secrets.DOCKERHUB_USER }}/hackers-api
               tag: latest
             hostname: "${{ env.HOSTNAME }}"
