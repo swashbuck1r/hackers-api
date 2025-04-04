@@ -6,6 +6,16 @@ on:
     branches:
       - "**"
   workflow_dispatch:
+
+permissions:
+  scm-token-own: read
+  id-token: write
+
+# Environment vars
+env:
+  APP_NAME: hackers-api
+  HOSTNAME: hackers-api.arch.beescloud.com
+
 jobs:
   dump-context:
     steps:
@@ -106,7 +116,7 @@ jobs:
             ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
           format: MARKDOWN
 
-  build:
+  build-and-publish:
     # if: ${{ cloudbees.scm.branch == 'main' }}
     needs: test
     services:
@@ -206,3 +216,38 @@ jobs:
     outputs:
       chart-location: ${{ steps.helm-publish.outputs.chart }}
       chart-version: ${{ steps.helm-publish.outputs.version }}
+
+  deploy:
+    needs:
+      - build-and-publish
+
+    steps:
+      - name: Login to AWS
+        uses: cloudbees-io/configure-aws-credentials@v1
+        id: aws-login
+        with:
+          aws-region: us-east-1
+          # aws-access-key-id: ${{ vars.aws_access_key_id }}
+          # aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          role-to-assume: arn:aws:iam::189768267137:role/cloudbees-infra-mgmt
+          role-duration-seconds: "3600" # need to override default of 6h as our role has 1h max.
+
+      - uses: cloudbees-io/configure-eks-credentials@v1
+        with:
+          name: cloudbees-quickstart
+
+      - uses: cloudbees-io/configure-ecr-credentials@v1
+
+      - id: install-chart
+        name: Install helm chart
+        uses: cloudbees-io/helm-install@v1
+        with:
+          chart-location: ${{ needs.build-and-publish.outputs.chart-location }}
+          version: ${{ needs.build-and-publish.outputs.chart-version }}
+          release-name: ${{ env.APP_NAME }}
+          namespace: ${{ env.APP_NAME }}
+          values: |
+            image:
+              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              tag: latest
+            hostname: "${{ env.HOSTNAME }}"

@@ -1,11 +1,14 @@
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-hackers-api
   labels:
     app: hackers-api
+  {{- with .Values.ingress.annotations }}
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: nginx
   tls:
@@ -22,4 +25,5 @@ spec:
               service:
                 name: {{ .Release.Name }}-hackers-api
                 port:
-                  number: {{ .Values.service.port }} 
+                  number: {{ .Values.service.port }}
+{{- end }}
