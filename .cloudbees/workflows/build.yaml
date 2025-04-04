@@ -153,7 +153,7 @@ jobs:
         id: dockerconfig
         with:
           registry: https://docker.io/
-          username: ${{ secrets.DOCKERHUB_USER }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build container image
@@ -161,7 +161,7 @@ jobs:
         uses: cloudbees-io/kaniko@v1
         kind: build
         with:
-          destination: ${{ secrets.DOCKERHUB_USER }}/hackers-api:${{ cloudbees.scm.sha }},${{ secrets.DOCKERHUB_USER }}/hackers-api:latest
+          destination: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api:${{ cloudbees.scm.sha }},${{ vars.DOCKERHUB_USERNAME }}/hackers-api:latest
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
           # tar-path: container-image.tar
 
@@ -169,7 +169,7 @@ jobs:
         uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
         if: ${{ cloudbees.scm.branch == 'main' }}
         with:
-          image-location: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+          image-location: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
           image-tag: ${{ cloudbees.scm.sha }}
 
       - name: Upload binary from container build
@@ -188,7 +188,7 @@ jobs:
           content: |-
             ## Built and pushed image to docker hub
 
-            [Docker Hub](https://hub.docker.com/repository/docker/${{ secrets.DOCKERHUB_USER }}/hackers-api/tags)
+            [Docker Hub](https://hub.docker.com/repository/docker/${{ vars.DOCKERHUB_USERNAME }}/hackers-api/tags)
 
             Deployed hackers-api:${{ cloudbees.scm.sha }}
           format: MARKDOWN
@@ -202,7 +202,7 @@ jobs:
           version: ${{ cloudbees.version }}
           values: |
             image:
-              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              repository: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
               tag: ${{ cloudbees.scm.sha }}
             hostname: hackers-api.arch.beescloud.com
 
@@ -211,7 +211,7 @@ jobs:
         uses: cloudbees-io/helm-push@v1
         with:
           chart: ${{ steps.helmpkg.outputs.chart }}
-          remote: oci://docker.io/${{ secrets.DOCKERHUB_USER }}
+          remote: oci://docker.io/${{ vars.DOCKERHUB_USERNAME }}
 
     outputs:
       chart-location: ${{ steps.helm-publish.outputs.chart }}
@@ -251,21 +251,21 @@ jobs:
         name: Install helm chart
         uses: cloudbees-io/helm-install@v1
         with:
-          # chart-location: oci://docker.io/${{ secrets.DOCKERHUB_USER }}/hackers-api-chart
+          # chart-location: oci://docker.io/${{ vars.DOCKERHUB_USERNAME }}/hackers-api-chart
           chart-location: ${{ needs.build-and-publish.outputs.chart-location }}
           version: ${{ needs.build-and-publish.outputs.chart-version }}
           release-name: ${{ env.APP_NAME }}
           namespace: ${{ env.APP_NAME }}
           values: |
             image:
-              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              repository: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
               tag: latest
             hostname: "${{ env.HOSTNAME }}"
 
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v1
         with:
-          name: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+          name: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
           version: "${{ needs.build-and-publish.outputs.chart-version }}"
           url: "${{ needs.build-and-publish.outputs.chart-location }}"
           target-environment: micro-hacker
