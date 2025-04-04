@@ -236,8 +236,6 @@ jobs:
         with:
           name: cloudbees-quickstart
 
-      - uses: cloudbees-io/configure-ecr-credentials@v1
-
       - id: install-chart
         name: Install helm chart
         uses: cloudbees-io/helm-install@v1
