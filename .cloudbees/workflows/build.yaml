@@ -218,6 +218,7 @@ jobs:
       chart-version: ${{ steps.helm-publish.outputs.version }}
 
   deploy:
+    environment: dev
     needs:
       - build-and-publish
 
@@ -268,14 +269,14 @@ jobs:
           name: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
           version: "${{ needs.build-and-publish.outputs.chart-version }}"
           url: "${{ needs.build-and-publish.outputs.chart-location }}"
-          target-environment: micro-hacker
+          target-environment: dev
 
       - name: Publish evidence
         uses: cloudbees-io/publish-evidence-item@v1
         with:
           content: |-
-            ## Deployed environment
-            Deployed to: ${{ env.HOSTNAME }}
-
-            Running: ${{ needs.build-and-publish.outputs.chart-location }}:${{ needs.build-and-publish.outputs.chart-version }}
+            ## Deployment details
+            
+            * Deployed to: ${{ env.HOSTNAME }}
+            * Running: ${{ needs.build-and-publish.outputs.chart-location }}:${{ needs.build-and-publish.outputs.chart-version }}
           format: MARKDOWN
