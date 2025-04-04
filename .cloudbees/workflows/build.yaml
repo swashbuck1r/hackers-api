@@ -8,15 +8,14 @@ on:
   workflow_dispatch:
 jobs:
   test:
-    if: ${{ cloudbees.scm.branch == 'main' }}
     env:
       COVER: "coverage.out"
       MIN_COVERAGE: "65"
     outputs:
       CODE_COVERAGE: ${{ steps.RunUnitTest.outputs.CODE_COVERAGE }}
     steps:
-      - uses: cloudbees-io/checkout@v1
-        name: Get source code
+      - name: Get source code
+        uses: cloudbees-io/checkout@v1
 
       - name: Run tests
         id: RunUnitTest
@@ -88,8 +87,8 @@ jobs:
       docker-registry:
         image: registry:2
     steps:
-      - uses: cloudbees-io/checkout@v1
-        name: Get source code
+      - name: Get source code
+        uses: cloudbees-io/checkout@v1
 
       - name: Run build
         kind: build
@@ -111,16 +110,17 @@ jobs:
           image-location: 127.0.0.1:5000/myapp
           image-tag: 0.0.1
 
-      - uses: cloudbees-io/configure-oci-credentials@v1
-        name: Configure container registry credentials
+      - name: Configure container registry credentials
+        uses: cloudbees-io/configure-oci-credentials@v1
         id: dockerconfig
         with:
           registry: https://index.docker.io/v1/
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - uses: cloudbees-io/kaniko@v1
-        name: Build container image
+      - name: Build container image
+        id: image-publish
+        uses: cloudbees-io/kaniko@v1
         kind: build
         with:
           destination: ${{ secrets.DOCKERHUB_USER }}/hackers-api:${{ cloudbees.scm.sha }},${{ secrets.DOCKERHUB_USER }}/hackers-api:latest
@@ -133,9 +133,9 @@ jobs:
           image-location: ${{ secrets.DOCKERHUB_USER }}/hackers-api
           image-tag: ${{ cloudbees.scm.sha }}
 
-      - uses: cloudbees-io/asset-chain-utils/upload-binary@v1
-        name: Upload binary from container build
+      - name: Upload binary from container build
         id: upload-binary
+        uses: cloudbees-io/asset-chain-utils/upload-binary@v1
         with:
           file-path: container-image.tar
           file-type: BINARY_CONTAINER
@@ -151,3 +151,27 @@ jobs:
 
             Deployed hackers-api:${{ cloudbees.scm.sha }}
           format: MARKDOWN
+
+      - name: Package Helm chart
+        id: helmpkg
+        uses: cloudbees-io/helm-package@v1
+        with:
+          chart: ./chart
+          destination: ./packaged-charts
+          version: ${{ cloudbees.scm.sha }}
+          values: |
+            image:
+              repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
+              tag: ${{ cloudbees.scm.sha }}
+            hostname: hackers-api.arch.beescloud.com
+
+      - name: Publish Helm chart
+        id: helm-publish
+        uses: cloudbees-io/helm-push@v1
+        with:
+          chart: ${{ steps.helmpkg.outputs.chart }}
+          remote: oci://${{ secrets.DOCKERHUB_USER }}/hackers-api-chart:${{ cloudbees.scm.sha }}
+
+    outputs:
+      chart-location: ${{ steps.helm-publish.outputs.chart }}
+      chart-version: ${{ steps.helm-publish.outputs.version }}
