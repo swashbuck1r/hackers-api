@@ -189,7 +189,7 @@ jobs:
         with:
           chart: ./chart
           destination: ./packaged-charts
-          version: ${{ cloudbees.scm.sha }}
+          version: ${{ cloudbees.version }}
           values: |
             image:
               repository: ${{ secrets.DOCKERHUB_USER }}/hackers-api
