@@ -196,19 +196,19 @@ jobs:
               tag: ${{ cloudbees.scm.sha }}
             hostname: hackers-api.arch.beescloud.com
 
-      # - name: Configure container registry credentials
-      #   uses: cloudbees-io/configure-oci-credentials@v1
-      #   with:
-      #     registry: https://registry-1.docker.io/
-      #     username: ${{ secrets.DOCKERHUB_USER }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Configure container registry credentials
+        uses: cloudbees-io/configure-oci-credentials@v1
+        with:
+          registry: https://docker.io/
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Publish Helm chart
         id: helm-publish
         uses: cloudbees-io/helm-push@v1
         with:
           chart: ${{ steps.helmpkg.outputs.chart }}
-          remote: oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USER }}/hackers-api-chart
+          remote: oci://docker.io/${{ secrets.DOCKERHUB_USER }}/hackers-api-chart
 
     outputs:
       chart-location: ${{ steps.helm-publish.outputs.chart }}
