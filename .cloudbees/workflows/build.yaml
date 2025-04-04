@@ -81,7 +81,7 @@ jobs:
           format: MARKDOWN
 
   build:
-    if: ${{ cloudbees.scm.branch == 'main' }}
+    # if: ${{ cloudbees.scm.branch == 'main' }}
     needs: test
     services:
       docker-registry:
