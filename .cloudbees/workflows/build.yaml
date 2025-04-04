@@ -201,7 +201,7 @@ jobs:
         uses: cloudbees-io/helm-push@v1
         with:
           chart: ${{ steps.helmpkg.outputs.chart }}
-          remote: oci://${{ secrets.DOCKERHUB_USER }}/hackers-api-chart:${{ cloudbees.scm.sha }}
+          remote: oci://${{ secrets.DOCKERHUB_USER }}/hackers-api-chart:${{ steps.helm-publish.outputs.version }}
 
     outputs:
       chart-location: ${{ steps.helm-publish.outputs.chart }}
