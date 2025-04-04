@@ -11,10 +11,10 @@ metadata:
   {{- end }}
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - {{ .Values.hostname }}
-      secretName: {{ .Release.Name }}-hackers-api-tls
+  # tls:
+  #   - hosts:
+  #       - {{ .Values.hostname }}
+  #     secretName: {{ .Release.Name }}-hackers-api-tls
   rules:
     - host: {{ .Values.hostname }}
       http:
