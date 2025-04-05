@@ -213,6 +213,17 @@ jobs:
           chart: ${{ steps.helmpkg.outputs.chart }}
           remote: oci://docker.io/${{ vars.DOCKERHUB_USERNAME }}
 
+      - uses: docker://golang:1.20.3-alpine3.17
+        name: Dump ending context
+        env:
+          JOB_CONTEXT: ${{ toJSON(job) }}
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+        run: |
+          echo "----- JOB -----"
+          echo "$JOB_CONTEXT"
+          echo "----- STEPS -----"
+          echo "$STEPS_CONTEXT"
+
     outputs:
       chart-location: ${{ steps.helm-publish.outputs.chart }}
       chart-version: ${{ steps.helm-publish.outputs.version }}
@@ -266,7 +277,7 @@ jobs:
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v1
         with:
-          name: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api
+          name: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api-chart
           version: "${{ needs.build-and-publish.outputs.chart-version }}"
           url: "${{ needs.build-and-publish.outputs.chart-location }}"
           target-environment: dev
@@ -276,7 +287,18 @@ jobs:
         with:
           content: |-
             ## Deployment details
-            
+
             * Deployed to: ${{ env.HOSTNAME }}
             * Running: ${{ needs.build-and-publish.outputs.chart-location }}:${{ needs.build-and-publish.outputs.chart-version }}
           format: MARKDOWN
+
+      - uses: docker://golang:1.20.3-alpine3.17
+        name: Dump ending context
+        env:
+          JOB_CONTEXT: ${{ toJSON(job) }}
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+        run: |
+          echo "----- JOB -----"
+          echo "$JOB_CONTEXT"
+          echo "----- STEPS -----"
+          echo "$STEPS_CONTEXT"
