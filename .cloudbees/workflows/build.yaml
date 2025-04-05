@@ -277,7 +277,7 @@ jobs:
       - name: Register deployed artifact
         uses: cloudbees-io/register-deployed-artifact@v1
         with:
-          name: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api-chart
+          name: hackers-api-chart
           version: "${{ needs.build-and-publish.outputs.chart-version }}"
           url: "${{ needs.build-and-publish.outputs.chart-location }}"
           target-environment: dev
