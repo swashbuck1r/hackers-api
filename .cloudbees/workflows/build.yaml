@@ -11,6 +11,7 @@ permissions:
   scm-token-own: read
   id-token: write
 
+
 # Environment vars
 env:
   APP_NAME: hackers-api
