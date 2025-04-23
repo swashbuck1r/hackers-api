@@ -164,7 +164,7 @@ jobs:
         with:
           destination: ${{ vars.DOCKERHUB_USERNAME }}/hackers-api:${{ cloudbees.scm.sha }},${{ vars.DOCKERHUB_USERNAME }}/hackers-api:latest
           build-args: BUILDKIT_CONTEXT_KEEP_GIT_DIR=1,BUILDKIT_INLINE_CACHE=1
-          # tar-path: container-image.tar
+          tar-path: container-image.tar
 
       - name: Run TruffleHog container scan (post-publish)
         uses: https://github.com/cloudbees-io/trufflehog-secret-scan-container@v1
@@ -176,7 +176,7 @@ jobs:
       - name: Upload binary from container build
         id: upload-binary
         uses: cloudbees-io/asset-chain-utils/upload-binary@v1
-        if: ${{ cloudbees.scm.branch == 'main' }}
+        # if: ${{ cloudbees.scm.branch == 'main' }}
         with:
           file-path: container-image.tar
           file-type: BINARY_CONTAINER
